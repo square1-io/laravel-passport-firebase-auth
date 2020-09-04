@@ -1,28 +1,20 @@
 # 
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v//laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages//laravel-passport-firebase-auth)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status//laravel-passport-firebase-auth/run-tests?label=tests)](https://github.com//laravel-passport-firebase-auth/actions?query=workflow%3Arun-tests+branch%3Amaster)
-[![Total Downloads](https://img.shields.io/packagist/dt//laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages//laravel-passport-firebase-auth)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
+[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/square1-io/laravel-passport-firebase-auth/run-tests?label=tests)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3Arun-tests+branch%3Amaster)
+[![Total Downloads](https://img.shields.io/packagist/dt/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
 
 
-This is where your description should go. Limit it to a paragraph or two. Consider adding a small example.
+Create and authenticate users with Firebase Auth providers, and let Laravel Passport handle the rest!
 
-## Support us
-
-Learn how to create a package like this one, by watching our premium video course:
-
-[![Laravel Package training](https://spatie.be/github/package-training.jpg)](https://laravelpackage.training)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+# Work in progres. Do not use in production!
 
 ## Installation
 
 You can install the package via composer:
 
 ```bash
-composer require /laravel-passport-firebase-auth
+composer require square1/laravel-passport-firebase-auth
 ```
 
 You can publish and run the migrations with:
@@ -46,10 +38,6 @@ return [
 
 ## Usage
 
-``` php
-$laravel-passport-firebase-auth = new Square1\LaravelPassportFirebaseAuth();
-echo $laravel-passport-firebase-auth->echoPhrase('Hello, Square1!');
-```
 
 ## Testing
 
@@ -61,17 +49,13 @@ composer test
 
 Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
-## Contributing
-
-Please see [CONTRIBUTING](.github/CONTRIBUTING.md) for details.
-
 ## Security
 
-If you discover any security related issues, please email freek@spatie.be instead of using the issue tracker.
+If you discover any security related issues, please email emiliano@square1.io instead of using the issue tracker.
 
 ## Credits
 
-- [Emiliano Tisato](https://github.com/EmilianoTisato)
+- [Emiliano Tisato](https://github.com/emilianotisato)
 - [All Contributors](../../contributors)
 
 ## License

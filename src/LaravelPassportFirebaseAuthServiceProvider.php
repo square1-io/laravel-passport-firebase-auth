@@ -2,8 +2,10 @@
 
 namespace Square1\LaravelPassportFirebaseAuth;
 
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Square1\LaravelPassportFirebaseAuth\Commands\LaravelPassportFirebaseAuthCommand;
+use Square1\LaravelPassportFirebaseAuth\Http\Controllers\FirebaseAuthController;
 
 class LaravelPassportFirebaseAuthServiceProvider extends ServiceProvider
 {
@@ -31,11 +33,19 @@ class LaravelPassportFirebaseAuthServiceProvider extends ServiceProvider
         }
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-passport-firebase-auth');
+
+        Route::post('login-firebase-user', [FirebaseAuthController::class, 'loginFirebaseUserInPassport']);
     }
 
     public function register()
     {
         $this->mergeConfigFrom(__DIR__ . '/../config/laravel-passport-firebase-auth.php', 'laravel-passport-firebase-auth');
+
+        $this->app->bind(LaravelPassportFirebaseAuth::class, function () {
+            return new LaravelPassportFirebaseAuth;
+        });
+
+        $this->app->alias(LaravelPassportFirebaseAuth::class, 'laravel-passport-firebase-auth');
     }
 
     public static function migrationFileExists(string $migrationFileName): bool

@@ -36,10 +36,14 @@ return [
 ];
 ```
 
+### Configure Laravel Passport
+### Configure Firebase
 ## Usage
 
 
 ## Testing
+
+Put your firebase credentials in `tests/keys/firebase_credentials.json` so tests are runed against the real firebase server.
 
 ``` bash
 composer test

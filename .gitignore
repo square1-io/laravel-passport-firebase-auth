@@ -6,3 +6,4 @@ coverage
 .phpunit.result.cache
 .idea
 .php_cs.cache
+/tests/firebase_credentials/firebase_credentials.json

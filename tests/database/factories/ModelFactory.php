@@ -7,6 +7,6 @@ use Square1\LaravelPassportFirebaseAuth\Tests\User;
 $factory->define(User::class, function (Generator $faker) {
     return [
         'email' => $faker->safeEmail,
-        'firebase_uid' => $faker->md5
+        'firebase_uid' => $faker->md5,
     ];
 });

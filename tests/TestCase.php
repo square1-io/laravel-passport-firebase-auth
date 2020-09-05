@@ -2,13 +2,13 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Tests;
 
-use Laravel\Passport\Passport;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Contracts\Config\Repository;
-use Laravel\Passport\PassportServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Kreait\Laravel\Firebase\ServiceProvider as FirebaseServiceProvider;
+use Laravel\Passport\Passport;
+use Laravel\Passport\PassportServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 use Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthFacade;
 use Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider;
 
@@ -108,7 +108,6 @@ class TestCase extends Orchestra
 
         include_once __DIR__.'/../database/migrations/create_laravel_passport_firebase_auth_table.php.stub';
         (new \CreateLaravelPassportFirebaseAuthTable())->up();
-
     }
 
     public function getFakePublicOauth()

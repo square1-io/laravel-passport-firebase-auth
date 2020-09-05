@@ -1,7 +1,9 @@
 # 
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
-[![GitHub Tests Action Status](https://img.shields.io/github/workflow/status/square1-io/laravel-passport-firebase-auth/tests?label=tests)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3Atests+branch%3Amaster)
+
+[![Tests](https://github.com/square1-io/laravel-passport-firebase-auth/workflows/Tests/badge.svg)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3ATests+branch%3Amaster)
+
 [![Total Downloads](https://img.shields.io/packagist/dt/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
 
 

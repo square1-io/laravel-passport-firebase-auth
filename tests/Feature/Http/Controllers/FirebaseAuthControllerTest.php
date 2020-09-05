@@ -2,10 +2,9 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Tests\Feature\Http\Controllers;
 
-use Laravel\Passport\Passport;
 use LaravelPassportFirebaseAuth;
-use Square1\LaravelPassportFirebaseAuth\Tests\User;
 use Square1\LaravelPassportFirebaseAuth\Tests\TestCase;
+use Square1\LaravelPassportFirebaseAuth\Tests\User;
 
 class FirebaseAuthControllerTest extends TestCase
 {
@@ -20,7 +19,7 @@ class FirebaseAuthControllerTest extends TestCase
             ->andReturn('fake-user-uid');
 
         $response = $this->post('login-firebase-user', [
-            'firebase_token' => 'fake-token'
+            'firebase_token' => 'fake-token',
         ]);
 
         $response->assertOk();

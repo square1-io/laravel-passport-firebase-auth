@@ -7,7 +7,6 @@ use LaravelPassportFirebaseAuth;
 
 class FirebaseAuthController
 {
-
     public function loginFirebaseUserInPassport(Request $request)
     {
         $uid = LaravelPassportFirebaseAuth::getUidFromToken($request->firebase_token);
@@ -39,7 +38,7 @@ class FirebaseAuthController
             'token_type' => 'Bearer',
             'expires_at' => now()->parse(
                 $tokenResult->token->expires_at
-            )->toDateTimeString()
+            )->toDateTimeString(),
         ]);
     }
 }

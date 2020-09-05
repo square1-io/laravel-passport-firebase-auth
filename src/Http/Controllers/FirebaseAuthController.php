@@ -9,9 +9,11 @@ class FirebaseAuthController
 {
     public function loginFirebaseUserInPassport(Request $request)
     {
+        /** @psalm-suppress UndefinedClass */
         $uid = LaravelPassportFirebaseAuth::getUidFromToken($request->firebase_token);
 
         // Retrieve the user model linked with the Firebase UID
+        /** @psalm-suppress UndefinedMethod */
         $user = config('auth.providers.users.model')::where('firebase_uid', $uid)->first();
 
         // Here you could check if the user model exist and if not create it

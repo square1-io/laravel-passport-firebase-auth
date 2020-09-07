@@ -1,15 +1,13 @@
-# 
+# Let Google Firebase create and auth users to your Laravel API using Laravel Passport
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
-
-[![Tests](https://github.com/square1-io/laravel-passport-firebase-auth/workflows/Tests/badge.svg)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3ATests+branch%3Amaster)
-
-[![Total Downloads](https://img.shields.io/packagist/dt/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
+[![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Tests](https://github.com/square1-io/laravel-passport-firebase-auth/workflows/Tests/badge.svg?style=flat-square)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3ATests+branch%3Amaster)
 
 
-Create and authenticate users with Firebase Auth providers, and let Laravel Passport handle the rest!
+Create and authenticate users with Firebase Auth providers (Google, Facebook, Apple, email, etc), and let Laravel Passport know and handle your backend secure endpoints!
 
-# Work in progres. Do not use in production!
+This is an opinionated way to create Laravel Passport tokens from a Firebase valid token.
 
 ## Installation
 
@@ -19,14 +17,14 @@ You can install the package via composer:
 composer require square1/laravel-passport-firebase-auth
 ```
 
-You can publish and run the migrations with:
+You will need a `firebase_uid` column on your users table. You can publish and run the migrations and customize that column with:
 
 ```bash
 php artisan vendor:publish --provider="Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider" --tag="migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Publish the config file with:
 ```bash
 php artisan vendor:publish --provider="Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider" --tag="config"
 ```
@@ -39,13 +37,82 @@ return [
 ```
 
 ### Configure Laravel Passport
+
+This package has Laravel Passport as a dependency, if you did not already, please [configure Laravel Passport](https://laravel.com/docs/7.x/passport).
+
 ### Configure Firebase
+
+Create a Firebase project in the console [https://console.firebase.google.com/](https://console.firebase.google.com/).
+
+If you did not already have generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
+After that, the Firebase Admin SDK screen will ask you to pick a language, just leave `Node.js` selected and click `Generate new private key`.
+
+Once you have downloaded the Service Account JSON file in your project (ATENTION! please git ignore this file as it has sensible credentials data), indicate the path to your file in `.env` like this:
+
+```
+FIREBASE_CREDENTIALS=storage/firebase_credentials.json
+```
+
+#### Configure auth providers
+
+In your firebase project create and configure all providers you want to use: [https://firebase.google.com/docs/auth](https://firebase.google.com/docs/auth)
+
 ## Usage
 
+This package will expose 2 endpoints under your api prefix:
 
+1) *POST*: `yourapp.com/api/v1/create-user-from-firebase` 
+
+In your mobile app or front end, you will allow your users to create an account using the [Firebase client SDK of your choice](https://firebase.google.com/docs/firestore/client/libraries).
+
+Then you will call this endpoint with a valid firebase token using the key `firebase_token` in the payload posted.
+
+This endpoint will reach firebase database, find and validate the user just created in your front end / mobile app, and it will create a user record in your laravel database saving the `firebase_uid` in users table you populated previously in the installation step.
+
+Optionaly, you can perform 2 extra user configuration steps here:
+
+    1 - a) Conect extra user data from the firebase users payload:
+    
+    In your config/laravel-passport-firebase-auth.php indicate the keys you want to match against your laravel users table using the "map_user_columns" key in the array.
+
+    1 - b) Pass any other custom data you need for the user creation proces in your laravel database. (e.g. user_plan, username, role, etc.).
+
+    For that us the instructions on the "extra_user_columns" key in the config array.
+
+    For security reasons, we'll validate and ignore any other values not declared in this "extra_user_columns" array.
+
+
+Example payload posted to `api/v1/create-user-from-firebase`:
+
+```json
+{
+    firebase_token: "super_long_firebase_token_here",
+    username: "someusername",
+    plan: "platinum",
+    role: "superadmin"
+}
+```
+
+if in your `config/laravel-passport-firebase-auth.php` file you have the followin configuration:
+
+```php
+    'map_user_columns' => [
+        'uid' => 'firebase_uid',
+        'email' => 'email',
+        'displayName' => 'full_name',
+        'photoURL' => 'avatar',
+        'provider' => 'provider'
+    ],
+    'extra_user_columns' => [
+        'username' => 'required|unique:users|max:255',
+        'plan' => 'required|in:silver,gold,platinum'
+    ]
+```
+
+The result will be that, the newly created firebase user will be stored in your database with the uid, email, displayName, photoURL and provider used, and the rest of the firebase metadata will be discarted.
+
+Also the username and plan will be stored, but the `role` manipulation attempt will be ignored.
 ## Testing
-
-Put your firebase credentials in `tests/keys/firebase_credentials.json` so tests are runed against the real firebase server.
 
 ``` bash
 composer test

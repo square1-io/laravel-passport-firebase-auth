@@ -16,7 +16,7 @@ class FirebaseAuthController
     {
         $uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
 
-        if (!$uid_column) {
+        if (! $uid_column) {
             throw NoUidColumnDeclaredException::create();
         }
 
@@ -27,7 +27,7 @@ class FirebaseAuthController
         /** @psalm-suppress UndefinedMethod */
         $user = config('auth.providers.users.model')::where($uid_column, $uid)->first();
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'message' => 'Unauthorized - User not found for the given firebase credentials.',
             ], 404);
@@ -45,7 +45,7 @@ class FirebaseAuthController
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
                 'expires_at' => $tokenResult->token->expires_at,
-            ]
+            ],
         ]);
     }
 }

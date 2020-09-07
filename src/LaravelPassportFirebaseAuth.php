@@ -8,6 +8,7 @@ class LaravelPassportFirebaseAuth
 {
     public function getUidFromToken(string $token) : string
     {
+        // Get Kreait\Firebase\Auth instance from the container
         $auth = app('firebase.auth');
 
         try { // Try to verify the Firebase credential token with Google

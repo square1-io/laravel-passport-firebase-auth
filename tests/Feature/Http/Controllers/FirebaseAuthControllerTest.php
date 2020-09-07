@@ -18,14 +18,14 @@ class FirebaseAuthControllerTest extends TestCase
             ->with('fake-token')
             ->andReturn('fake-user-uid');
 
-        $response = $this->post('login-firebase-user', [
+        $response = $this->post('api/v1/login-from-firebase', [
             'firebase_token' => 'fake-token',
         ]);
 
         $response->assertOk();
 
-        $this->assertEquals($user->id, $response->getData()->id);
-        $this->assertNotNull($response->getData()->access_token);
-        $this->assertTrue($response->getData()->expires_at > now()->format('Y-m-d H:i:s'));
+        $this->assertEquals($user->id, $response->getData()->data->user_id);
+        $this->assertNotNull($response->getData()->data->access_token);
+        $this->assertTrue($response->getData()->data->expires_at > now()->format('Y-m-d H:i:s'));
     }
 }

@@ -34,7 +34,10 @@ class LaravelPassportFirebaseAuthServiceProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-passport-firebase-auth');
 
-        Route::post('login-firebase-user', [FirebaseAuthController::class, 'loginFirebaseUserInPassport']);
+        Route::prefix(config('laravel-passport-firebase-auth.api_prefix'))->group(function () {
+            Route::post('create-user-from-firebase', [FirebaseAuthController::class, 'createUserFromFirebase']);
+            Route::post('login-from-firebase', [FirebaseAuthController::class, 'loginFromFirebase']);
+        });
     }
 
     public function register()

@@ -4,43 +4,48 @@ namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
 use Illuminate\Http\Request;
 use LaravelPassportFirebaseAuth;
+use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController
 {
-    public function loginFirebaseUserInPassport(Request $request)
+    public function createUserFromFirebase()
     {
+    }
+
+    public function loginFromFirebase(Request $request)
+    {
+        $uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
+
+        if (!$uid_column) {
+            throw NoUidColumnDeclaredException::create();
+        }
+
         /** @psalm-suppress UndefinedClass */
         $uid = LaravelPassportFirebaseAuth::getUidFromToken($request->firebase_token);
 
         // Retrieve the user model linked with the Firebase UID
         /** @psalm-suppress UndefinedMethod */
-        $user = config('auth.providers.users.model')::where('firebase_uid', $uid)->first();
+        $user = config('auth.providers.users.model')::where($uid_column, $uid)->first();
 
-        // Here you could check if the user model exist and if not create it
-        // For simplicity we will ignore this step
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized - User not found for the given firebase credentials.',
+            ], 404);
+        }
 
-        // Once we got a valid user model
-        // Create a Personnal Access Token
         $tokenResult = $user->createToken('Personal Access Token');
 
-        // Store the created token
-        $token = $tokenResult->token;
+        $tokenResult->token->expires_at = now()->addMinutes(config('laravel-passport-firebase-auth.token_expiration_in_minutes'));
+        $tokenResult->token->save();
 
-        // Add a expiration date to the token
-        $token->expires_at = now()->addWeeks(1);
-
-        // Save the token to the user
-        $token->save();
-
-        // Return a JSON object containing the token datas
-        // You may format this object to suit your needs
         return response()->json([
-            'id' => $user->id,
-            'access_token' => $tokenResult->accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => now()->parse(
-                $tokenResult->token->expires_at
-            )->toDateTimeString(),
+            'status' => 'success',
+            'data' => [
+                'user_id' => $user->id,
+                'access_token' => $tokenResult->accessToken,
+                'token_type' => 'Bearer',
+                'expires_at' => $tokenResult->token->expires_at,
+            ]
         ]);
     }
 }

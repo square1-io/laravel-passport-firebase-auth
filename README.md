@@ -119,7 +119,9 @@ You will receive a `success` status from the endpoint, along with the backend us
 ```json
 {
     "status": "success",
-    "user_id": 1
+    "data": {
+        "user_id": 1
+    }
 }
 ```
 
@@ -132,10 +134,12 @@ In case we find the user in the laravel database, the result will contain a `suc
 ```json
 {
     "status": "success",
-    "user_id": 1,
-    "access_token": "valid_laravel_passport_token",
-    "token_type": "Bearer",
-    "expires_at": "2020-05-23 08:23:45"
+    "data": {
+        "user_id": 1,
+        "access_token": "valid_laravel_passport_token",
+        "token_type": "Bearer",
+        "expires_at": "2020-09-14T23:17:02.000000Z"
+    }
 }
 ```
 

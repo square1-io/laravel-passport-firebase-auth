@@ -2,13 +2,14 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController
 {
-    private $uid_column;
+    private string $uid_column;
 
     public function __construct()
     {
@@ -18,7 +19,7 @@ class FirebaseAuthController
             throw NoUidColumnDeclaredException::create();
         }
     }
-    public function createUserFromFirebase(Request $request)
+    public function createUserFromFirebase(Request $request) : JsonResponse
     {
         /** @psalm-suppress UndefinedClass */
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
@@ -60,7 +61,7 @@ class FirebaseAuthController
         ]);
     }
 
-    public function loginFromFirebase(Request $request)
+    public function loginFromFirebase(Request $request) : JsonResponse
     {
         /** @psalm-suppress UndefinedClass */
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);

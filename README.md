@@ -47,11 +47,11 @@ return [
     'token_expiration_in_minutes' => 60 * 24 * 7, // Default 1 week expiration
 
     /**
-     * Please update the column names in the array values to match your users database columns.
-     * Please remove the key pairs you don't need to store, but 'uid' and 'email' are required!
-     * For the 'uid' create a nullable string (we'l do this if use this package migrations)
-     * Of course make all column fillable in your User model,
-     * or we can't save if those columns are protected.
+     * Please update the column names in the array (the values) to match your users database columns.
+     * Remove all the key pairs you don't need to store, but leave 'uid' and 'email', we need them!
+     * For the 'uid' create a nullable string (we'll do this if use this package migrations)
+     * Of course, make all columns fillable in your User model
+     * or we can't save them if those columns are protected.
      */
     'map_user_columns' => [
         'uid' => 'firebase_uid', // REQUIRED
@@ -60,15 +60,15 @@ return [
         'emailVerified' => 'email_verified_at',
         'phoneNumber' => 'phone',
         'photoURL' => 'avatar',
-        'provider' => 'provider' // We'll store the provider used in case you need that info
+        'provider' => 'provider' // e.g facebook, google, password
     ],
 
     /**
      * If you need some mandatory columns in order to store your laravel user model,
-     * you can indicate them in here along with the validation rules needed.
+     * you can indicate them in here along with the validation rules you need.
      * Of course, you will need to post this keys as indicated in the readme.
-     * And of course, make all column fillable in your User model,
-     * or we can't save if those columns are protected.
+     * And of course, make all columns fillable in your User model,
+     * or we can't save them if those columns are protected.
      */
     'extra_user_columns' => [
         // 'username' => 'required|unique:users|max:255',
@@ -85,7 +85,7 @@ This package has Laravel Passport as a dependency, if you did not already, pleas
 
 Create a Firebase project in the console [https://console.firebase.google.com/](https://console.firebase.google.com/).
 
-If you did not already have generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
+If you did not already please generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
 After that, the Firebase Admin SDK screen will ask you to pick a language, just leave `Node.js` selected and click `Generate new private key`.
 
 Once you have downloaded the Service Account JSON file in your project (**ATENTION! please git ignore this file** as it has sensible credentials), indicate the path to your file in `.env` like this:

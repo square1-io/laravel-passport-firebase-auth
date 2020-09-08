@@ -1,4 +1,4 @@
-# Let Google Firebase create and auth users to your Laravel API using Laravel Passport
+# Let Google Firebase create and authenticate users to your Laravel API (using Laravel Passport)
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
@@ -21,6 +21,7 @@ You will need a `firebase_uid` column on your users table. You can publish and r
 
 ```bash
 php artisan vendor:publish --provider="Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider" --tag="migrations"
+
 # after column customization run:
 php artisan migrate
 ```
@@ -48,7 +49,7 @@ Create a Firebase project in the console [https://console.firebase.google.com/](
 If you did not already have generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
 After that, the Firebase Admin SDK screen will ask you to pick a language, just leave `Node.js` selected and click `Generate new private key`.
 
-Once you have downloaded the Service Account JSON file in your project (ATENTION! please git ignore this file as it has sensible credentials), indicate the path to your file in `.env` like this:
+Once you have downloaded the Service Account JSON file in your project (**ATENTION! please git ignore this file** as it has sensible credentials), indicate the path to your file in `.env` like this:
 
 ```
 FIREBASE_CREDENTIALS=storage/firebase_credentials.json
@@ -62,7 +63,7 @@ In your firebase project create and configure all providers you want to use: [ht
 
 This package will expose 2 endpoints under your api prefix (configurable):
 
-1) *POST*: `yourapp.com/api/v1/create-user-from-firebase` 
+1) **POST**: `api/v1/create-user-from-firebase` 
 
 In your mobile app or front end, you will allow your users to create an account using the [Firebase client SDK of your choice](https://firebase.google.com/docs/firestore/client/libraries).
 
@@ -72,15 +73,15 @@ This endpoint will reach firebase database, find and validate the user just crea
 
 Optionaly, you can perform 2 extra user configuration steps here:
 
-*1 - a)* Conect extra user data from the firebase users payload:
+**1 - a) Conect extra user data from the firebase users payload:**
     
 In your config/laravel-passport-firebase-auth.php indicate the keys you want to match against your laravel users table using the "map_user_columns" key in the array.
 
-*1 - b)* Pass any other custom data you need for the user creation proces in your laravel database. (e.g. user_plan, username, role, etc.).
+**1 - b) Pass any other custom data you need for the user creation proces in your laravel database:**
 
-For that us the instructions on the "extra_user_columns" key in the config array.
+An example will be if user creation require some mandatory collumns (e.g. user_plan, username, role, etc.). For this you will use the instructions on the "extra_user_columns" key in the config array.
 
-For security reasons, we'll validate and ignore any other values not declared in this "extra_user_columns" array.
+For security reasons, we'll validate this data, and we'll ignore any other values not declared in this "extra_user_columns" array.
 
 ----
 Example payload posted to `api/v1/create-user-from-firebase`:
@@ -102,7 +103,6 @@ if in your `config/laravel-passport-firebase-auth.php` file you have the followi
         'email' => 'email',
         'displayName' => 'full_name',
         'photoURL' => 'avatar',
-        'provider' => 'provider'
     ],
     'extra_user_columns' => [
         'username' => 'required|unique:users|max:255',
@@ -110,7 +110,7 @@ if in your `config/laravel-passport-firebase-auth.php` file you have the followi
     ]
 ```
 
-The result will be that, the newly created firebase user will be stored in your database with the uid, email, displayName, photoURL and provider used, and the rest of the firebase metadata will be discarted.
+The result will be that, the newly created firebase user will be stored in your database with the uid, email, displayName as the full_name column, photoURL as the avatar column, and the rest of the firebase metadata will be discarted.
 
 Also the username and plan will be stored, but the `role` manipulation attempt will be ignored.
 
@@ -125,7 +125,7 @@ You will receive a `success` status from the endpoint, along with the backend us
 }
 ```
 
-2) *POST*: `yourapp.com/api/v1/login-from-firebase` 
+2) **POST**: `api/v1/login-from-firebase` 
 
 You will need to call this endpoint with only a valid firebase token using the key `firebase_token` in the payload posted.
 

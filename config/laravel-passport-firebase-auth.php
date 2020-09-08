@@ -16,6 +16,8 @@ return [
      * Please update the column names in the array values to match your users database columns.
      * Please remove the key pairs you don't need to store, but 'uid' and 'email' are required!
      * For the 'uid' create a nullable string (we'l do this if use this package migrations)
+     * Of course make all column fillable in your User model,
+     * or we can't save if those columns are protected.
      */
     'map_user_columns' => [
         'uid' => 'firebase_uid', // REQUIRED
@@ -29,11 +31,13 @@ return [
 
     /**
      * If you need some mandatory columns in order to store your laravel user model,
-     * you can indicate that in here along with the validation rules needed.
-     * Of course, you will need to post them as indicated in the readme.
+     * you can indicate them in here along with the validation rules needed.
+     * Of course, you will need to post this keys as indicated in the readme.
+     * And of course, make all column fillable in your User model,
+     * or we can't save if those columns are protected.
      */
     'extra_user_columns' => [
         // 'username' => 'required|unique:users|max:255',
-        // 'dob' => 'require|date|before:today|date_format:Y-m-d'
+        // 'birthday' => 'require|date|before:today|date_format:Y-m-d'
     ]
 ];

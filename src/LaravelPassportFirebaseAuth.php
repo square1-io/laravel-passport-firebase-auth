@@ -2,11 +2,12 @@
 
 namespace Square1\LaravelPassportFirebaseAuth;
 
+use Kreait\Firebase\Auth\UserRecord;
 use Firebase\Auth\Token\Exception\InvalidToken;
 
 class LaravelPassportFirebaseAuth
 {
-    public function getUidFromToken(string $token) : string
+    public function getUserFromToken(string $token): UserRecord
     {
         // Get Kreait\Firebase\Auth instance from the container
         $auth = app('firebase.auth');
@@ -27,6 +28,8 @@ class LaravelPassportFirebaseAuth
         }
 
         // Retrieve the UID (User ID) from the verified Firebase credential's token
-        return $verifiedIdToken->getClaim('sub');
+        $uid =  $verifiedIdToken->getClaim('sub');
+
+        return $auth->getUser($uid);
     }
 }

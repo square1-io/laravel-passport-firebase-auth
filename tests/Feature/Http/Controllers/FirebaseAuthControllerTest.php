@@ -22,13 +22,13 @@ class FirebaseAuthControllerTest extends TestCase
         ;
 
 
-        $this->assertDatabaseCount('users', 0);
+        $this->assertEquals(0, User::count());
         $response = $this->post('api/v1/create-user-from-firebase', [
             'firebase_token' => 'fake-token',
         ]);
 
         $response->assertOk();
-        $this->assertDatabaseCount('users', 1);
+        $this->assertEquals(1, User::count());
 
         $this->assertEquals(User::first()->id, $response->getData()->data->user_id);
         $this->assertNotNull($response->getData()->data->access_token);

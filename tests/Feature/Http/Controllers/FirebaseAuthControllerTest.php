@@ -18,7 +18,8 @@ class FirebaseAuthControllerTest extends TestCase
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
             ->once()
             ->with('fake-token')
-            ->andReturn($firebaseUser);;
+            ->andReturn($firebaseUser);
+        ;
 
 
         $this->assertDatabaseCount('users', 0);

@@ -35,7 +35,7 @@ class FirebaseAuthController
         try {
             $user = config('auth.providers.users.model')::create([
                 'email' => $firebaseUser->email,
-                $this->uid_column, $firebaseUser->uid
+                $this->uid_column, $firebaseUser->uid,
             ]);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
@@ -56,7 +56,7 @@ class FirebaseAuthController
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
                 'expires_at' => $tokenResult->token->expires_at,
-            ]
+            ],
         ]);
     }
 

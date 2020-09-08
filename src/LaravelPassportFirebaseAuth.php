@@ -3,6 +3,7 @@
 namespace Square1\LaravelPassportFirebaseAuth;
 
 use Firebase\Auth\Token\Exception\InvalidToken;
+
 class LaravelPassportFirebaseAuth
 {
     public function getUserFromToken(string $token)

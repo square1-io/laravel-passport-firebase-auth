@@ -2,10 +2,11 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
+use Illuminate\Http\JsonResponse;
+use Kreait\Firebase\Auth\UserRecord;
+use Firebase\Auth\Token\Exception\InvalidToken;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController
@@ -16,7 +17,7 @@ class FirebaseAuthController
     {
         $this->uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
 
-        if (! $this->uid_column) {
+        if (!$this->uid_column) {
             throw NoUidColumnDeclaredException::create();
         }
     }
@@ -50,7 +51,19 @@ class FirebaseAuthController
 
     public function loginFromFirebase(Request $request): JsonResponse
     {
-        $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
+        try { // Try to verify the Firebase credential token with Google
+            $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
+        } catch (\InvalidArgumentException $e) { // If the token has the wrong format
+
+            return response()->json([
+                'message' => 'Unauthorized - Can\'t parse the token: ' . $e->getMessage(),
+            ], 401);
+        } catch (InvalidToken $e) { // If the token is invalid (expired ...)
+
+            return response()->json([
+                'message' => 'Unauthorized - Token is invalide: ' . $e->getMessage(),
+            ], 401);
+        }
 
         if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser)) {
             $user = LaravelPassportFirebaseAuth::findOrCreateAnonymousUser($this->uid_column, $firebaseUser->uid);
@@ -58,12 +71,12 @@ class FirebaseAuthController
             // Retrieve the user model linked with the Firebase UID
             /** @psalm-suppress UndefinedMethod */
             $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
+        }
 
-            if (! $user) {
-                return response()->json([
-                    'message' => 'Unauthorized - User not found for the given firebase credentials.',
-                ], 404);
-            }
+        if (!$user) {
+            return response()->json([
+                'message' => 'Unauthorized - User not found for the given firebase credentials.',
+            ], 404);
         }
 
         $tokenResult = LaravelPassportFirebaseAuth::createPassportToken($user);

@@ -2,10 +2,10 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
-use Illuminate\Http\Request;
-use LaravelPassportFirebaseAuth;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Kreait\Firebase\Auth\UserRecord;
+use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController
@@ -59,7 +59,7 @@ class FirebaseAuthController
             /** @psalm-suppress UndefinedMethod */
             $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
 
-            if (!$user) {
+            if (! $user) {
                 return response()->json([
                     'message' => 'Unauthorized - User not found for the given firebase credentials.',
                 ], 404);

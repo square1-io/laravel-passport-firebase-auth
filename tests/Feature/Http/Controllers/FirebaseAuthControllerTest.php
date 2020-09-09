@@ -6,7 +6,6 @@ use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Tests\TestCase;
 use Square1\LaravelPassportFirebaseAuth\Tests\User;
-use stdClass;
 
 class FirebaseAuthControllerTest extends TestCase
 {
@@ -15,7 +14,7 @@ class FirebaseAuthControllerTest extends TestCase
     {
         $firebaseUser = $this->createFirebaseUser([
             'uid' => 'fake-user-uid',
-            'email' => 'fake@email.com'
+            'email' => 'fake@email.com',
         ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
@@ -50,7 +49,7 @@ class FirebaseAuthControllerTest extends TestCase
             'uid' => 'fake-user-uid',
             'email' => 'fake@email.com',
             'displayName' => 'Test User',
-            'photoURL' => 'image.png' // This will not be save intentionaly
+            'photoURL' => 'image.png', // This will not be save intentionaly
         ]);
 
 
@@ -85,7 +84,7 @@ class FirebaseAuthControllerTest extends TestCase
 
         $firebaseUser = $this->createFirebaseUser([
             'uid' => 'fake-user-uid',
-            'email' => 'fake@email.com'
+            'email' => 'fake@email.com',
         ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
@@ -114,7 +113,7 @@ class FirebaseAuthControllerTest extends TestCase
     {
         $user = factory(User::class)->create(['firebase_uid' => 'fake-user-uid']);
         $firebaseUser = $this->createFirebaseUser([
-            'uid' => 'fake-user-uid'
+            'uid' => 'fake-user-uid',
         ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
@@ -140,7 +139,7 @@ class FirebaseAuthControllerTest extends TestCase
         $this->app['config']->set('laravel-passport-firebase-auth.allow_anonymous_users', true);
         $this->app['config']->set('laravel-passport-firebase-auth.anonymous_columns', [
             'email' => '@testdomain.com',
-            'role' => 'anonymous'
+            'role' => 'anonymous',
         ]);
 
         $firebaseUser = $this->createFirebaseUser([
@@ -163,15 +162,17 @@ class FirebaseAuthControllerTest extends TestCase
 
         $user = User::first();
         $this->assertEquals('fake-anonymous-user-uid', $user->firebase_uid);
-        $this->assertEquals('fake-anonymous-user-uid@testdomain.com', $user->email);;
-        $this->assertEquals('anonymous', $user->role);;
+        $this->assertEquals('fake-anonymous-user-uid@testdomain.com', $user->email);
+        ;
+        $this->assertEquals('anonymous', $user->role);
+        ;
     }
 
     /**
      * Factory fake firebase user
      *
      * @param array $data
-     * @param boolean $anonymous
+     * @param bool $anonymous
      * @return \Kreait\Firebase\Auth\UserRecord
      */
     private function createFirebaseUser(array $data, $anonymous = false): UserRecord
@@ -181,7 +182,7 @@ class FirebaseAuthControllerTest extends TestCase
             $firebaseUser->{$firebaseKey} = $value;
         }
 
-        if (!key_exists('provider', $data)) {
+        if (! key_exists('provider', $data)) {
             if ($anonymous) {
                 $firebaseUser->providerData = [];
             } else {

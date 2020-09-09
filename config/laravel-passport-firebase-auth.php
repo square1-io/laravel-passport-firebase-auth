@@ -26,7 +26,7 @@ return [
         'emailVerified' => 'email_verified_at',
         'phoneNumber' => 'phone',
         'photoURL' => 'avatar',
-        'provider' => 'provider' // e.g facebook, google, password
+        'provider' => 'provider', // e.g facebook, google, password
     ],
 
     /**
@@ -57,5 +57,5 @@ return [
         'name' => 'Anonymous',
         'anonymous' => true,
         // 'avatar' => 'sample_anonymous_avatar.png'
-    ]
+    ],
 ];

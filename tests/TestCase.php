@@ -2,13 +2,13 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Tests;
 
-use Illuminate\Contracts\Config\Repository;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Kreait\Laravel\Firebase\ServiceProvider as FirebaseServiceProvider;
 use Laravel\Passport\Passport;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Contracts\Config\Repository;
 use Laravel\Passport\PassportServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Kreait\Laravel\Firebase\ServiceProvider as FirebaseServiceProvider;
 use Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthFacade;
 use Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider;
 

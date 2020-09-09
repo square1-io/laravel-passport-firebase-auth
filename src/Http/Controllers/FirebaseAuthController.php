@@ -2,11 +2,11 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
-use Firebase\Auth\Token\Exception\InvalidToken;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
+use Illuminate\Http\JsonResponse;
+use Kreait\Firebase\Auth\UserRecord;
+use Firebase\Auth\Token\Exception\InvalidToken;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController

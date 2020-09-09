@@ -2,10 +2,10 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Tests\Feature\Http\Controllers;
 
-use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
-use Square1\LaravelPassportFirebaseAuth\Tests\TestCase;
+use Kreait\Firebase\Auth\UserRecord;
 use Square1\LaravelPassportFirebaseAuth\Tests\User;
+use Square1\LaravelPassportFirebaseAuth\Tests\TestCase;
 
 class FirebaseAuthControllerTest extends TestCase
 {

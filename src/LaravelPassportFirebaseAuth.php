@@ -13,8 +13,6 @@ class LaravelPassportFirebaseAuth
      * Find firebase user record or return 401 if invalid token
      *
      * @param string $token
-     * @return Kreait\Firebase\Auth\UserRecord
-     * @return Illuminate\Http\JsonResponse
      */
     public function getUserFromToken(string $token)
     {
@@ -77,20 +75,25 @@ class LaravelPassportFirebaseAuth
      * @param string $uid
      * @return \Illuminate\Foundation\Auth\User
      */
-    public function findOrCreateAnonymousUser(string $uid_column, string $uid) : User
+    public function findOrCreateAnonymousUser(string $uid_column, string $uid) : ?User
     {
         if (! config('laravel-passport-firebase-auth.allow_anonymous_users')) {
             return null;
         }
 
+        /** @psalm-suppress UndefinedMethod */
         $user = config('auth.providers.users.model')::where($uid_column, $uid)->first();
 
         if (! $user) {
             $data = array_merge(
-                config('laravel-passport-firebase-auth.allow_anonymous_users'),
+                config('laravel-passport-firebase-auth.anonymous_columns'),
                 [$uid_column => $uid]
             );
-            dd($data);
+            if (key_exists('email', $data)) {
+                $data['email'] = $uid.$data['email'];
+            }
+
+            /** @psalm-suppress UndefinedMethod */
             $user = config('auth.providers.users.model')::create($data);
         }
 

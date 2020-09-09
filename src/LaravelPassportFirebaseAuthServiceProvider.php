@@ -4,7 +4,6 @@ namespace Square1\LaravelPassportFirebaseAuth;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
-use Square1\LaravelPassportFirebaseAuth\Commands\LaravelPassportFirebaseAuthCommand;
 use Square1\LaravelPassportFirebaseAuth\Http\Controllers\FirebaseAuthController;
 
 class LaravelPassportFirebaseAuthServiceProvider extends ServiceProvider
@@ -26,10 +25,6 @@ class LaravelPassportFirebaseAuthServiceProvider extends ServiceProvider
                     __DIR__ . "/../database/migrations/{$migrationFileName}.stub" => database_path('migrations/' . date('Y_m_d_His', time()) . '_' . $migrationFileName),
                 ], 'migrations');
             }
-
-            $this->commands([
-                LaravelPassportFirebaseAuthCommand::class,
-            ]);
         }
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'laravel-passport-firebase-auth');

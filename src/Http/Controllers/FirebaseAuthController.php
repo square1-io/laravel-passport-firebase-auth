@@ -2,11 +2,11 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
-use Illuminate\Http\Request;
-use LaravelPassportFirebaseAuth;
-use Illuminate\Http\JsonResponse;
-use Kreait\Firebase\Auth\UserRecord;
 use Firebase\Auth\Token\Exception\InvalidToken;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Kreait\Firebase\Auth\UserRecord;
+use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
 class FirebaseAuthController
@@ -17,7 +17,7 @@ class FirebaseAuthController
     {
         $this->uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
 
-        if (!$this->uid_column) {
+        if (! $this->uid_column) {
             throw NoUidColumnDeclaredException::create();
         }
     }
@@ -73,7 +73,7 @@ class FirebaseAuthController
             $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
         }
 
-        if (!$user) {
+        if (! $user) {
             return response()->json([
                 'message' => 'Unauthorized - User not found for the given firebase credentials.',
             ], 404);

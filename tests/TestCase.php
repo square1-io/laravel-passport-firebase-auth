@@ -16,11 +16,6 @@ class TestCase extends Orchestra
 {
     use RefreshDatabase;
 
-    const KEYS = __DIR__.'/keys';
-    const PUBLIC_KEY = self::KEYS.'/oauth-public.key';
-    const PRIVATE_KEY = self::KEYS.'/oauth-private.key';
-    const FIREBASE_CREDENTIALS = self::KEYS.'/firebase_credentials.json';
-
     public function setUp(): void
     {
         parent::setUp();
@@ -31,10 +26,6 @@ class TestCase extends Orchestra
 
         Passport::routes();
 
-        // @unlink(self::PUBLIC_KEY);
-        // @unlink(self::PRIVATE_KEY);
-
-        // $this->artisan('passport:keys');
         $this->artisan('passport:install');
     }
 
@@ -51,12 +42,8 @@ class TestCase extends Orchestra
         $app['config']->set('passport.storage.database.connection', 'sqlite');
 
         $app['config']->set('app.key', 'base64:fakekey/avhnnoiIltExLrEfZvvZx7h1Hb29Pgel2ec=');
-        // $app['config']->set('passport.private_key', file_get_contents(self::PRIVATE_KEY));
-        // $app['config']->set('passport.public_key', file_get_contents(self::PUBLIC_KEY));
         $app['config']->set('passport.public_key', $this->getFakePublicOauth());
         $app['config']->set('passport.private_key', $this->getFakePrivateOauth());
-
-        // $app['config']->set('firebase.credentials.file', self::FIREBASE_CREDENTIALS);
 
         $app['config']->set('database.connections.sqlite', [
             'driver' => 'sqlite',

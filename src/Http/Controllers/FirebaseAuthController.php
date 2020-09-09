@@ -108,19 +108,19 @@ class FirebaseAuthController
 
 
         $extra_user_columns = config('laravel-passport-firebase-auth.extra_user_columns');
-        $data = array_merge($data, $request->only(array_keys($extra_user_columns)));
 
         $authenticable_class = config('auth.providers.users.model');
         /** @psalm-suppress UndefinedClass */
         $usersTable = (new $authenticable_class)->getTable();
+
         $rules = array_merge($extra_user_columns, [
             $this->uid_column => 'required',
-
-            'email' => 'required|unique:'.$usersTable,
+            'email' => 'required|unique:' . $usersTable,
         ]);
 
         $request->request->add($data);
         $request->validate($rules);
-        return $request->all();
+
+        return array_merge($data, $request->only(array_keys($extra_user_columns)));
     }
 }

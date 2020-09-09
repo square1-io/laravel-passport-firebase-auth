@@ -70,6 +70,42 @@ class FirebaseAuthControllerTest extends TestCase
     }
 
     /** @test */
+    public function it_can_save_custom_columns_posted_on_creation_attempt()
+    {
+        $this->app['config']->set('laravel-passport-firebase-auth.extra_user_columns', [
+            'username' => 'required|unique:users|max:255',
+        ]);
+
+        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
+        $firebaseUser->uid = 'fake-user-uid';
+        $firebaseUser->email = 'fake@email.com';
+
+        LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
+            ->once()
+            ->with('fake-token')
+            ->andReturn($firebaseUser);
+
+
+        $this->assertEquals(0, User::count());
+        $response = $this->post('api/v1/create-user-from-firebase', [
+            'firebase_token' => 'fake-token',
+            'username' => 'fake-username',
+            'role' => 'superadmin',
+        ]);
+
+        $response->assertOk();
+        $this->assertEquals(1, User::count());
+
+        $user = User::first();
+        $this->assertEquals('fake-username', $user->username);
+        $this->assertNotEquals('superadmin', $user->role);
+    }
+
+    /** @test */
+    public function it_can_create_anonymous_users_if_firebase_provider_is_anonymous()
+    {
+    }
+    /** @test */
     public function it_gets_a_valid_passport_token_form_a_firebase_user_token()
     {
         $user = factory(User::class)->create(['firebase_uid' => 'fake-user-uid']);

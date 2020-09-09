@@ -106,6 +106,7 @@ class TestCase extends Orchestra
             $table->string('email');
             $table->string('name')->nullable();
             $table->string('avatar')->nullable();
+            $table->string('username')->nullable();
             $table->string('role')->nullable();
         });
 

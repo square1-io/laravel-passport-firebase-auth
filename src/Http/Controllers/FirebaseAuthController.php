@@ -36,11 +36,8 @@ class FirebaseAuthController
             ], 401);
         }
 
-
-        $tokenResult = $user->createToken('Personal Access Token');
-
-        $tokenResult->token->expires_at = now()->addMinutes(config('laravel-passport-firebase-auth.token_expiration_in_minutes'));
-        $tokenResult->token->save();
+        /** @psalm-suppress UndefinedClass */
+        $tokenResult = LaravelPassportFirebaseAuth::createPassportToken($user);
 
         return response()->json([
             'status' => 'success',
@@ -58,20 +55,22 @@ class FirebaseAuthController
         /** @psalm-suppress UndefinedClass */
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
 
-        // Retrieve the user model linked with the Firebase UID
-        /** @psalm-suppress UndefinedMethod */
-        $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
+        // if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser)) {
+        //     $user = LaravelPassportFirebaseAuth::findOrCreateAnonymousUser($firebaseUser->uid);
+        // } else {
+            // Retrieve the user model linked with the Firebase UID
+            /** @psalm-suppress UndefinedMethod */
+            $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
 
-        if (!$user) {
-            return response()->json([
-                'message' => 'Unauthorized - User not found for the given firebase credentials.',
-            ], 404);
-        }
+            if (!$user) {
+                return response()->json([
+                    'message' => 'Unauthorized - User not found for the given firebase credentials.',
+                ], 404);
+            }
+        // }
 
-        $tokenResult = $user->createToken('Personal Access Token');
-
-        $tokenResult->token->expires_at = now()->addMinutes(config('laravel-passport-firebase-auth.token_expiration_in_minutes'));
-        $tokenResult->token->save();
+        /** @psalm-suppress UndefinedClass */
+        $tokenResult = LaravelPassportFirebaseAuth::createPassportToken($user);
 
         return response()->json([
             'status' => 'success',

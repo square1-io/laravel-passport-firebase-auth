@@ -19,6 +19,7 @@ class FirebaseAuthControllerTest extends TestCase
             ->once()
             ->with('fake-token')
             ->andReturn($firebaseUser);
+        LaravelPassportFirebaseAuth::makePartial();
 
         $this->assertEquals(0, User::count());
         $response = $this->post('api/v1/create-user-from-firebase', [
@@ -48,10 +49,12 @@ class FirebaseAuthControllerTest extends TestCase
         $firebaseUser->displayName = 'Test User';
         $firebaseUser->photoURL = 'image.png'; // This will not be save
 
+
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
             ->once()
             ->with('fake-token')
             ->andReturn($firebaseUser);
+        LaravelPassportFirebaseAuth::makePartial();
 
 
         $this->assertEquals(0, User::count());
@@ -84,7 +87,7 @@ class FirebaseAuthControllerTest extends TestCase
             ->once()
             ->with('fake-token')
             ->andReturn($firebaseUser);
-
+        LaravelPassportFirebaseAuth::makePartial();
 
         $this->assertEquals(0, User::count());
         $response = $this->post('api/v1/create-user-from-firebase', [
@@ -116,6 +119,7 @@ class FirebaseAuthControllerTest extends TestCase
             ->once()
             ->with('fake-token')
             ->andReturn($firebaseUser);
+        LaravelPassportFirebaseAuth::makePartial();
 
         $response = $this->post('api/v1/login-from-firebase', [
             'firebase_token' => 'fake-token',

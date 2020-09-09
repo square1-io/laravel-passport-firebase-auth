@@ -2,6 +2,7 @@
 
 namespace Square1\LaravelPassportFirebaseAuth;
 
+use Illuminate\Foundation\Auth\User;
 use Firebase\Auth\Token\Exception\InvalidToken;
 
 class LaravelPassportFirebaseAuth
@@ -30,5 +31,14 @@ class LaravelPassportFirebaseAuth
         $uid = $verifiedIdToken->getClaim('sub');
 
         return $auth->getUser($uid);
+    }
+
+    public function createPassportToken(User $user)
+    {
+        $tokenResult = $user->createToken('Personal Access Token');
+        $tokenResult->token->expires_at = now()->addMinutes(config('laravel-passport-firebase-auth.token_expiration_in_minutes'));
+        $tokenResult->token->save();
+
+        return $tokenResult;
     }
 }

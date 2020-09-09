@@ -73,6 +73,24 @@ return [
     'extra_user_columns' => [
         // 'username' => 'required|unique:users|max:255',
         // 'birthday' => 'require|date|before:today|date_format:Y-m-d'
+    ],
+
+    /**
+     * Please indicate if anonymous firebase users capability is alowed in your application.
+     * If so, we will need to olso create an "anonymous" user in your database in order
+     * to let Laravel Passport issue a token for that particular user.
+     */
+    'allow_anonymous_users' => false,
+
+    /**
+     * Indicate the mandatory fields for anonymous user creation in your laravel database.
+     * For the email, we'll concatenate (prefix) with the UID from firebase.
+     */
+    'anonymous_columns' => [
+        'email' => '@anonymous.com', // This will end up being firebasetoken@anonymous.com
+        'name' => 'Anonymous',
+        'anonymous' => true,
+        // 'avatar' => 'sample_anonymous_avatar.png'
     ]
 ];
 ```

@@ -16,7 +16,7 @@ class FirebaseAuthController
     {
         $this->uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
 
-        if (!$this->uid_column) {
+        if (! $this->uid_column) {
             throw NoUidColumnDeclaredException::create();
         }
     }

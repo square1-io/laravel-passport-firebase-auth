@@ -2,9 +2,9 @@
 
 namespace Square1\LaravelPassportFirebaseAuth;
 
+use Firebase\Auth\Token\Exception\InvalidToken;
 use Illuminate\Foundation\Auth\User;
 use Kreait\Firebase\Auth\UserRecord;
-use Firebase\Auth\Token\Exception\InvalidToken;
 use Laravel\Passport\PersonalAccessTokenResult;
 
 class LaravelPassportFirebaseAuth
@@ -59,7 +59,7 @@ class LaravelPassportFirebaseAuth
      * Check if firebase user is anonymous
      *
      * @param \Kreait\Firebase\Auth\UserRecord $firebaseUser
-     * @return boolean
+     * @return bool
      */
     public function isAnonymousUser(UserRecord $firebaseUser) : bool
     {
@@ -98,6 +98,5 @@ class LaravelPassportFirebaseAuth
         }
 
         return $user;
-
     }
 }

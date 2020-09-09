@@ -106,7 +106,7 @@ This package will expose 2 endpoints under your api prefix (configurable):
 
 In your mobile app or front end, you will allow your users to create an account using the [Firebase client SDK of your choice](https://firebase.google.com/docs/firestore/client/libraries).
 
-Then you will call this endpoint with a valid firebase token using the key `firebase_token` in the payload posted.
+Then you will call this endpoint with a valid firebase token using the `firebase_token` key in the payload posted.
 
 This endpoint will reach firebase database, find and validate the user just created in your front end / mobile app, and it will create a user record in your laravel database saving the `firebase_uid` in users table you populated previously in the installation step.
 
@@ -118,7 +118,7 @@ In your config/laravel-passport-firebase-auth.php indicate the keys you want to 
 
 **1 - b) Pass any other custom data you need for the user creation proces in your laravel database:**
 
-An example will be if user creation require some mandatory collumns (e.g. user_plan, username, role, etc.). For this you will use the instructions on the "extra_user_columns" key in the config array.
+An example will be if user creation require some mandatory columns (e.g. user_plan, username, role, etc.). For this you will use the instructions on the "extra_user_columns" key in the config array.
 
 For security reasons, we'll validate this data, and we'll ignore any other values not declared in this "extra_user_columns" array.
 
@@ -153,13 +153,16 @@ The result will be that, the newly created firebase user will be stored in your 
 
 Also the username and plan will be stored, but the `role` manipulation attempt will be ignored.
 
-You will receive a `success` status from the endpoint, along with the backend user ID.
+You will receive a `success` status from the endpoint, along with the backend user ID and valid Laravel Passport access token.
 
 ```json
 {
     "status": "success",
     "data": {
-        "user_id": 1
+        "user_id": 1,
+        "access_token": "valid_laravel_passport_token",
+        "token_type": "Bearer",
+        "expires_at": "2020-09-14T23:16:35.000000Z"
     }
 }
 ```

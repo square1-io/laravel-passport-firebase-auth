@@ -104,6 +104,9 @@ class TestCase extends Orchestra
         $app['db']->connection()->getSchemaBuilder()->create('users', function (Blueprint $table) {
             $table->increments('id');
             $table->string('email');
+            $table->string('name')->nullable();
+            $table->string('avatar')->nullable();
+            $table->string('role')->nullable();
         });
 
         include_once __DIR__.'/../database/migrations/create_laravel_passport_firebase_auth_table.php.stub';

@@ -19,7 +19,39 @@ class FirebaseAuthControllerTest extends TestCase
             ->once()
             ->with('fake-token')
             ->andReturn($firebaseUser);
-        ;
+
+        $this->assertEquals(0, User::count());
+        $response = $this->post('api/v1/create-user-from-firebase', [
+            'firebase_token' => 'fake-token',
+        ]);
+        $response->assertSessionHasNoErrors();
+
+        $response->assertOk();
+        $this->assertEquals(1, User::count());
+
+        $this->assertEquals(User::first()->id, $response->getData()->data->user_id);
+        $this->assertNotNull($response->getData()->data->access_token);
+    }
+
+    /** @test */
+    public function it_only_save_other_firebase_user_data_as_decalared_in_config_file()
+    {
+        $this->app['config']->set('laravel-passport-firebase-auth.map_user_columns', [
+            'uid' => 'firebase_uid',
+            'email' => 'email',
+            'displayName' => 'name',
+        ]);
+
+        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
+        $firebaseUser->uid = 'fake-user-uid';
+        $firebaseUser->email = 'fake@email.com';
+        $firebaseUser->displayName = 'Test User';
+        $firebaseUser->photoURL = 'image.png'; // This will not be save
+
+        LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
+            ->once()
+            ->with('fake-token')
+            ->andReturn($firebaseUser);
 
 
         $this->assertEquals(0, User::count());
@@ -30,8 +62,11 @@ class FirebaseAuthControllerTest extends TestCase
         $response->assertOk();
         $this->assertEquals(1, User::count());
 
-        $this->assertEquals(User::first()->id, $response->getData()->data->user_id);
-        $this->assertNotNull($response->getData()->data->access_token);
+        $user = User::first();
+        $this->assertEquals('fake-user-uid', $user->firebase_uid);
+        $this->assertEquals('fake@email.com', $user->email);
+        $this->assertEquals('Test User', $user->name);
+        $this->assertNotEquals('image.png', $user->avatar);
     }
 
     /** @test */

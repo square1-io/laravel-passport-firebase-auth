@@ -4,6 +4,7 @@ namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
@@ -15,29 +16,20 @@ class FirebaseAuthController
     {
         $this->uid_column = config('laravel-passport-firebase-auth.map_user_columns.uid');
 
-        if (! $this->uid_column) {
+        if (!$this->uid_column) {
             throw NoUidColumnDeclaredException::create();
         }
     }
-    public function createUserFromFirebase(Request $request) : JsonResponse
+    public function createUserFromFirebase(Request $request): JsonResponse
     {
         /** @psalm-suppress UndefinedClass */
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
 
-        // return $firebaseUser->uid;
-        // return $firebaseUser->email;
-        // return $firebaseUser->emailVerified;
-        // return $firebaseUser->displayName;
-        // return $firebaseUser->photoUrl;
-        // return $firebaseUser->phoneNumber;
-        // return $firebaseUser->providerData[0]->providerId;
         // Retrieve the user model linked with the Firebase UID
         /** @psalm-suppress UndefinedMethod */
         try {
-            $user = config('auth.providers.users.model')::create([
-                'email' => $firebaseUser->email,
-                $this->uid_column, $firebaseUser->uid,
-            ]);
+            $data = $this->validateAndTrimUserData($firebaseUser, $request);
+            $user = config('auth.providers.users.model')::create($data);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
                 'message' => 'Unauthorized - Can\'t process some database column: ' . $e->getMessage(),
@@ -61,7 +53,7 @@ class FirebaseAuthController
         ]);
     }
 
-    public function loginFromFirebase(Request $request) : JsonResponse
+    public function loginFromFirebase(Request $request): JsonResponse
     {
         /** @psalm-suppress UndefinedClass */
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
@@ -70,7 +62,7 @@ class FirebaseAuthController
         /** @psalm-suppress UndefinedMethod */
         $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
 
-        if (! $user) {
+        if (!$user) {
             return response()->json([
                 'message' => 'Unauthorized - User not found for the given firebase credentials.',
             ], 404);
@@ -90,5 +82,45 @@ class FirebaseAuthController
                 'expires_at' => $tokenResult->token->expires_at,
             ],
         ]);
+    }
+
+    private function validateAndTrimUserData(UserRecord $firebaseUser, Request $request): array
+    {
+        $data = [
+            'email' => $firebaseUser->email,
+            $this->uid_column => $firebaseUser->uid,
+        ];
+
+        // Add firebase user data
+        foreach (config('laravel-passport-firebase-auth.map_user_columns') as $firebaseKey => $column) {
+            if (property_exists($firebaseUser, $firebaseKey)) {
+                $data[$column] = $firebaseUser->{$firebaseKey};
+            }
+            if ($firebaseKey == 'provider') {
+                if (property_exists($firebaseUser, 'providerData') && $firebaseUser->providerData != null) {
+                    $data[$column] = $firebaseUser->providerData[0]->providerId;
+                }
+            }
+            if ($firebaseKey == 'emailVerified') {
+                $data[$column] = $firebaseUser->{$firebaseKey} ? now()->format('Y-m-d') : false;
+            }
+        }
+
+
+        $extra_user_columns = config('laravel-passport-firebase-auth.extra_user_columns');
+        $data = array_merge($data, $request->only(array_keys($extra_user_columns)));
+
+        $authenticable_class = config('auth.providers.users.model');
+        /** @psalm-suppress UndefinedClass */
+        $usersTable = (new $authenticable_class)->getTable();
+        $rules = array_merge($extra_user_columns, [
+            $this->uid_column => 'required',
+
+            'email' => 'required|unique:'.$usersTable,
+        ]);
+
+        $request->request->add($data);
+        $request->validate($rules);
+        return $request->all();
     }
 }

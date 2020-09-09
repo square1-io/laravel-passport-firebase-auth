@@ -53,7 +53,7 @@ class FirebaseAuthController
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
 
         if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser)) {
-            $user = LaravelPassportFirebaseAuth::findOrCreateAnonymousUser($firebaseUser->uid);
+            $user = LaravelPassportFirebaseAuth::findOrCreateAnonymousUser($this->uid_column, $firebaseUser->uid);
         } else {
             // Retrieve the user model linked with the Firebase UID
             /** @psalm-suppress UndefinedMethod */

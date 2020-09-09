@@ -2,18 +2,21 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Tests\Feature\Http\Controllers;
 
+use Kreait\Firebase\Auth\UserRecord;
 use LaravelPassportFirebaseAuth;
 use Square1\LaravelPassportFirebaseAuth\Tests\TestCase;
 use Square1\LaravelPassportFirebaseAuth\Tests\User;
+use stdClass;
 
 class FirebaseAuthControllerTest extends TestCase
 {
     /** @test */
     public function it_create_a_user_in_the_backend_and_return_a_valid_passport_token()
     {
-        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
-        $firebaseUser->uid = 'fake-user-uid';
-        $firebaseUser->email = 'fake@email.com';
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid',
+            'email' => 'fake@email.com'
+        ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
             ->once()
@@ -43,11 +46,12 @@ class FirebaseAuthControllerTest extends TestCase
             'displayName' => 'name',
         ]);
 
-        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
-        $firebaseUser->uid = 'fake-user-uid';
-        $firebaseUser->email = 'fake@email.com';
-        $firebaseUser->displayName = 'Test User';
-        $firebaseUser->photoURL = 'image.png'; // This will not be save
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid',
+            'email' => 'fake@email.com',
+            'displayName' => 'Test User',
+            'photoURL' => 'image.png' // This will not be save intentionaly
+        ]);
 
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
@@ -79,9 +83,10 @@ class FirebaseAuthControllerTest extends TestCase
             'username' => 'required|unique:users|max:255',
         ]);
 
-        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
-        $firebaseUser->uid = 'fake-user-uid';
-        $firebaseUser->email = 'fake@email.com';
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid',
+            'email' => 'fake@email.com'
+        ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
             ->once()
@@ -112,8 +117,9 @@ class FirebaseAuthControllerTest extends TestCase
     public function it_gets_a_valid_passport_token_form_a_firebase_user_token()
     {
         $user = factory(User::class)->create(['firebase_uid' => 'fake-user-uid']);
-        $firebaseUser = new \Kreait\Firebase\Auth\UserRecord();
-        $firebaseUser->uid = 'fake-user-uid';
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid'
+        ]);
 
         LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
             ->once()
@@ -130,5 +136,25 @@ class FirebaseAuthControllerTest extends TestCase
         $this->assertEquals($user->id, $response->getData()->data->user_id);
         $this->assertNotNull($response->getData()->data->access_token);
         $this->assertTrue($response->getData()->data->expires_at > now()->format('Y-m-d H:i:s'));
+    }
+
+    /**
+     * Factory fake firebase user
+     *
+     * @param array $data
+     * @return \Kreait\Firebase\Auth\UserRecord
+     */
+    private function createFirebaseUser(array $data): UserRecord
+    {
+        $firebaseUser = new UserRecord();
+        foreach ($data as $firebaseKey => $value) {
+            $firebaseUser->{$firebaseKey} = $value;
+        }
+
+        if (! key_exists('provider', $data)) {
+            $firebaseUser->providerData = [ (object) ['providerId' => 'password']];
+        }
+
+        return $firebaseUser;
     }
 }

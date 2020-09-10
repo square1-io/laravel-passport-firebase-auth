@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use LaravelPassportFirebaseAuth;
 use Illuminate\Http\JsonResponse;
 use Kreait\Firebase\Auth\UserRecord;
+use Illuminate\Support\Facades\Validator;
 use Firebase\Auth\Token\Exception\InvalidToken;
 use Square1\LaravelPassportFirebaseAuth\Exceptions\NoUidColumnDeclaredException;
 
@@ -28,10 +29,25 @@ class FirebaseAuthController
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
 
         try {
-            if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser) && config('laravel-passport-firebase-auth.allow_anonymous_users')) {
-                $data = $this->validateAndTrimUserData($firebaseUser, $request, true);
-            } else {
-                $data = $this->validateAndTrimUserData($firebaseUser, $request);
+            $is_anonymous = LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser) && config('laravel-passport-firebase-auth.allow_anonymous_users');
+            $data = array_merge(
+                $this->buildUserData($firebaseUser, $is_anonymous),
+                $request->only(
+                    array_keys($extra_user_columns = config('laravel-passport-firebase-auth.extra_user_columns'))
+                )
+            );
+
+            $authenticable_class = config('auth.providers.users.model');
+            /** @psalm-suppress UndefinedClass */
+            $usersTable = (new $authenticable_class)->getTable();
+            $rules = array_merge($extra_user_columns, [
+                $this->uid_column => 'required:unique:'.$usersTable,
+                'email' => 'required|unique:'.$usersTable,
+            ]);
+
+            $validator = Validator::make($data, $rules);
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
             }
 
             /** @psalm-suppress UndefinedMethod */
@@ -92,7 +108,7 @@ class FirebaseAuthController
         ]);
     }
 
-    private function validateAndTrimUserData(UserRecord $firebaseUser, Request $request, $anonymous = false) : array
+    private function buildUserData(UserRecord $firebaseUser, $anonymous = false) : array
     {
         $data = [];
         // Add firebase user data
@@ -128,20 +144,6 @@ class FirebaseAuthController
 
         $data['password'] = Str::random(32);
 
-        $extra_user_columns = config('laravel-passport-firebase-auth.extra_user_columns');
-
-        $authenticable_class = config('auth.providers.users.model');
-        /** @psalm-suppress UndefinedClass */
-        $usersTable = (new $authenticable_class)->getTable();
-
-        $rules = array_merge($extra_user_columns, [
-            $this->uid_column => 'required:unique:'.$usersTable,
-            'email' => 'required|unique:'.$usersTable,
-        ]);
-
-        $request->request->add($data);
-        $request->validate($rules);
-
-        return array_merge($data, $request->only(array_keys($extra_user_columns)));
+        return $data;
     }
 }

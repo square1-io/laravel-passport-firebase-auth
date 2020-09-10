@@ -120,7 +120,7 @@ In your firebase project create and configure all providers you want to use: [ht
 
 This package will expose 2 endpoints under your api prefix (configurable):
 
-1) **POST**: `api/v1/create-user-from-firebase` 
+1) **POST**: `api/v1/firebase/user/create` 
 
 In your mobile app or front end, you will allow your users to create an account using the [Firebase client SDK of your choice](https://firebase.google.com/docs/firestore/client/libraries).
 
@@ -141,7 +141,7 @@ An example will be if user creation require some mandatory columns (e.g. user_pl
 For security reasons, we'll validate this data, and we'll ignore any other values not declared in this "extra_user_columns" array.
 
 ----
-Example payload posted to `api/v1/create-user-from-firebase`:
+Example payload posted to `api/v1/firebase/user/create`:
 
 ```json
 {
@@ -185,7 +185,7 @@ You will receive a `success` status from the endpoint, along with the backend us
 }
 ```
 
-2) **POST**: `api/v1/login-from-firebase` 
+2) **POST**: `api/v1/firebase/user/login` 
 
 You will need to call this endpoint with only a valid firebase token using the key `firebase_token` in the payload posted.
 

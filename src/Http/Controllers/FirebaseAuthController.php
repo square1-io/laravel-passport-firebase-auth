@@ -2,6 +2,7 @@
 
 namespace Square1\LaravelPassportFirebaseAuth\Http\Controllers;
 
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use LaravelPassportFirebaseAuth;
 use Illuminate\Http\JsonResponse;
@@ -21,18 +22,23 @@ class FirebaseAuthController
             throw NoUidColumnDeclaredException::create();
         }
     }
-    public function createUserFromFirebase(Request $request): JsonResponse
+
+    public function createUserFromFirebase(Request $request) : JsonResponse
     {
         $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
 
-        // Retrieve the user model linked with the Firebase UID
         try {
-            $data = $this->validateAndTrimUserData($firebaseUser, $request);
+            if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser) && config('laravel-passport-firebase-auth.allow_anonymous_users')) {
+                $data = $this->validateAndTrimUserData($firebaseUser, $request, true);
+            } else {
+                $data = $this->validateAndTrimUserData($firebaseUser, $request);
+            }
+
             /** @psalm-suppress UndefinedMethod */
             $user = config('auth.providers.users.model')::create($data);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
-                'message' => 'Unauthorized - Can\'t process some database column: ' . $e->getMessage(),
+                'message' => 'Unauthorized - Can\'t process some database column: '.$e->getMessage(),
             ], 401);
         }
 
@@ -49,29 +55,23 @@ class FirebaseAuthController
         ]);
     }
 
-    public function loginFromFirebase(Request $request): JsonResponse
+    public function loginFromFirebase(Request $request) : JsonResponse
     {
         try { // Try to verify the Firebase credential token with Google
             $firebaseUser = LaravelPassportFirebaseAuth::getUserFromToken($request->firebase_token);
         } catch (\InvalidArgumentException $e) { // If the token has the wrong format
-
             return response()->json([
-                'message' => 'Unauthorized - Can\'t parse the token: ' . $e->getMessage(),
+                'message' => 'Unauthorized - Can\'t parse the token: '.$e->getMessage(),
             ], 401);
         } catch (InvalidToken $e) { // If the token is invalid (expired ...)
-
             return response()->json([
-                'message' => 'Unauthorized - Token is invalide: ' . $e->getMessage(),
+                'message' => 'Unauthorized - Token is invalide: '.$e->getMessage(),
             ], 401);
         }
 
-        if (LaravelPassportFirebaseAuth::isAnonymousUser($firebaseUser)) {
-            $user = LaravelPassportFirebaseAuth::findOrCreateAnonymousUser($this->uid_column, $firebaseUser->uid);
-        } else {
-            // Retrieve the user model linked with the Firebase UID
-            /** @psalm-suppress UndefinedMethod */
-            $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
-        }
+        // Retrieve the user model linked with the Firebase UID
+        /** @psalm-suppress UndefinedMethod */
+        $user = config('auth.providers.users.model')::where($this->uid_column, $firebaseUser->uid)->first();
 
         if (! $user) {
             return response()->json([
@@ -92,13 +92,9 @@ class FirebaseAuthController
         ]);
     }
 
-    private function validateAndTrimUserData(UserRecord $firebaseUser, Request $request): array
+    private function validateAndTrimUserData(UserRecord $firebaseUser, Request $request, $anonymous = false) : array
     {
-        $data = [
-            'email' => $firebaseUser->email,
-            $this->uid_column => $firebaseUser->uid,
-        ];
-
+        $data = [];
         // Add firebase user data
         foreach (config('laravel-passport-firebase-auth.map_user_columns') as $firebaseKey => $column) {
             if (property_exists($firebaseUser, $firebaseKey)) {
@@ -114,6 +110,23 @@ class FirebaseAuthController
             }
         }
 
+        if ($anonymous) {
+            $dataOverride = array_merge(
+                config('laravel-passport-firebase-auth.anonymous_columns'),
+                [$this->uid_column => $firebaseUser->uid]
+            );
+            if (key_exists('email', $dataOverride)) {
+                $dataOverride['email'] = $firebaseUser->uid.$dataOverride['email'];
+            }
+        } else {
+            $dataOverride = [
+                'email' => $firebaseUser->email,
+                $this->uid_column => $firebaseUser->uid,
+            ];
+        }
+        $data = array_merge($data, $dataOverride);
+
+        $data['password'] = Str::random(32);
 
         $extra_user_columns = config('laravel-passport-firebase-auth.extra_user_columns');
 
@@ -122,8 +135,8 @@ class FirebaseAuthController
         $usersTable = (new $authenticable_class)->getTable();
 
         $rules = array_merge($extra_user_columns, [
-            $this->uid_column => 'required',
-            'email' => 'required|unique:' . $usersTable,
+            $this->uid_column => 'required:unique:'.$usersTable,
+            'email' => 'required|unique:'.$usersTable,
         ]);
 
         $request->request->add($data);

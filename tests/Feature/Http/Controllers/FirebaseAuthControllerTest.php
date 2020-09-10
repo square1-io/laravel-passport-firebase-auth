@@ -24,7 +24,7 @@ class FirebaseAuthControllerTest extends TestCase
         LaravelPassportFirebaseAuth::makePartial();
 
         $this->assertEquals(0, User::count());
-        $response = $this->post('api/v1/create-user-from-firebase', [
+        $response = $this->post('api/v1/firebase/user/create', [
             'firebase_token' => 'fake-token',
         ]);
         $response->assertSessionHasNoErrors();
@@ -61,7 +61,7 @@ class FirebaseAuthControllerTest extends TestCase
 
 
         $this->assertEquals(0, User::count());
-        $response = $this->post('api/v1/create-user-from-firebase', [
+        $response = $this->post('api/v1/firebase/user/create', [
             'firebase_token' => 'fake-token',
         ]);
 
@@ -94,7 +94,7 @@ class FirebaseAuthControllerTest extends TestCase
         LaravelPassportFirebaseAuth::makePartial();
 
         $this->assertEquals(0, User::count());
-        $response = $this->post('api/v1/create-user-from-firebase', [
+        $response = $this->post('api/v1/firebase/user/create', [
             'firebase_token' => 'fake-token',
             'username' => 'fake-username',
             'role' => 'superadmin',
@@ -122,7 +122,7 @@ class FirebaseAuthControllerTest extends TestCase
             ->andReturn($firebaseUser);
         LaravelPassportFirebaseAuth::makePartial();
 
-        $response = $this->post('api/v1/login-from-firebase', [
+        $response = $this->post('api/v1/firebase/user/login', [
             'firebase_token' => 'fake-token',
         ]);
 
@@ -134,7 +134,7 @@ class FirebaseAuthControllerTest extends TestCase
     }
 
     /** @test */
-    public function it_can_create_anonymous_users_if_firebase_provider_is_anonymous_on_login()
+    public function it_can_create_anonymous_users_if_firebase_provider_is_enabled()
     {
         $this->app['config']->set('laravel-passport-firebase-auth.allow_anonymous_users', true);
         $this->app['config']->set('laravel-passport-firebase-auth.anonymous_columns', [
@@ -153,7 +153,7 @@ class FirebaseAuthControllerTest extends TestCase
         LaravelPassportFirebaseAuth::makePartial();
 
         $this->assertEquals(0, User::count());
-        $response = $this->post('api/v1/login-from-firebase', [
+        $response = $this->post('api/v1/firebase/user/create', [
             'firebase_token' => 'fake-token',
         ]);
 

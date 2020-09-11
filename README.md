@@ -1,6 +1,6 @@
 # Let Google Firebase create and authenticate users to your Laravel API (using Laravel Passport)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/square1-io/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1-io/laravel-passport-firebase-auth)
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/square1/laravel-passport-firebase-auth.svg?style=flat-square)](https://packagist.org/packages/square1/laravel-passport-firebase-auth)
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Tests](https://github.com/square1-io/laravel-passport-firebase-auth/workflows/Tests/badge.svg?style=flat-square)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3ATests+branch%3Amaster)
 

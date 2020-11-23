@@ -18,8 +18,8 @@
         }
     ],
     "require": {
-        "php": "^7.4",
-        "illuminate/support": "^7.0|^7.0|^8.0",
+        "php": "^7.3",
+        "illuminate/support": "^7.0|^8.0",
         "kreait/laravel-firebase": "^2.3.1",
         "laravel/passport": "^9.3|^10.0"
     },
@@ -28,8 +28,8 @@
         "laravel/legacy-factories": "^1.0.4",
         "orchestra/testbench": "^5.0 || ^6.0",
         "phpunit/phpunit": "^9.3",
-        "psalm/plugin-laravel": "^1.2",
-        "vimeo/psalm": "^3.11"
+        "psalm/plugin-laravel": "^1.4",
+        "vimeo/psalm": "^4.0"
     },
     "autoload": {
         "psr-4": {

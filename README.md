@@ -190,9 +190,9 @@ You will receive a `success` status from the endpoint, along with the backend us
         "access_token": "valid_laravel_passport_token",
         "token_type": "Bearer",
         "expires_at": "2020-09-14T23:16:35.000000Z",
-        "user": [
+        "user": {
             'id' => 1
-        ],
+        },
     }
 }
 ```
@@ -210,9 +210,9 @@ In case we find the user in the laravel database, the result will contain a `suc
         "access_token": "valid_laravel_passport_token",
         "token_type": "Bearer",
         "expires_at": "2020-09-14T23:17:02.000000Z",
-        "user": [
+        "user": {
             'id' => 1
-        ],
+        },
     }
 }
 ```

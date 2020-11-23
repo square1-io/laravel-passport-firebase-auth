@@ -191,8 +191,8 @@ You will receive a `success` status from the endpoint, along with the backend us
         "token_type": "Bearer",
         "expires_at": "2020-09-14T23:16:35.000000Z",
         "user": {
-            'id' => 1
-        },
+            "id": 1
+        }
     }
 }
 ```
@@ -211,8 +211,8 @@ In case we find the user in the laravel database, the result will contain a `suc
         "token_type": "Bearer",
         "expires_at": "2020-09-14T23:17:02.000000Z",
         "user": {
-            'id' => 1
-        },
+            "id": 1
+        }
     }
 }
 ```

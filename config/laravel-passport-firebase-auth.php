@@ -30,6 +30,15 @@ return [
     ],
 
     /**
+     * Define a set of columns to add to `user` key in returned payload
+     */
+    'expose_user_columns' => [
+        'id',
+        // 'username',
+        // 'role',
+    ],
+
+    /**
      * If you need some mandatory columns in order to store your laravel user model,
      * you can indicate them in here along with the validation rules you need.
      * Of course, you will need to post this keys as indicated in the readme.

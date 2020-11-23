@@ -4,7 +4,6 @@
 [![MIT Licensed](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
 [![Tests](https://github.com/square1-io/laravel-passport-firebase-auth/workflows/Tests/badge.svg?style=flat-square)](https://github.com/square1-io/laravel-passport-firebase-auth/actions?query=workflow%3ATests+branch%3Amaster)
 
-
 Create and authenticate users with Firebase Auth providers (Google, Facebook, Apple, email, etc), and let Laravel Passport know and handle your backend secure endpoints!
 
 This is an opinionated way to create Laravel Passport tokens from a Firebase valid token.
@@ -27,6 +26,7 @@ php artisan migrate
 ```
 
 Publish the config file with:
+
 ```bash
 php artisan vendor:publish --provider="Square1\LaravelPassportFirebaseAuth\LaravelPassportFirebaseAuthServiceProvider" --tag="config"
 ```
@@ -61,6 +61,15 @@ return [
         'phoneNumber' => 'phone',
         'photoURL' => 'avatar',
         'provider' => 'provider' // e.g facebook, google, password
+    ],
+
+    /**
+     * Define a set of columns to add to `user` key in returned payload
+     */
+    'expose_user_columns' => [
+        'id',
+        // 'username',
+        // 'role',
     ],
 
     /**
@@ -103,7 +112,7 @@ This package has Laravel Passport as a dependency, if you did not already, pleas
 
 Create a Firebase project in the console [https://console.firebase.google.com/](https://console.firebase.google.com/).
 
-If you did not already please generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
+If you did not already please generated your Service Account auth file, do it from this url: [https://console.firebase.google.com/project/\_/settings/serviceaccounts/adminsdk](https://console.firebase.google.com/project/_/settings/serviceaccounts/adminsdk). You will be asked to select the Firebase Project.
 After that, the Firebase Admin SDK screen will ask you to pick a language, just leave `Node.js` selected and click `Generate new private key`.
 
 Once you have downloaded the Service Account JSON file in your project (**ATENTION! please git ignore this file** as it has sensible credentials), indicate the path to your file in `.env` like this:
@@ -120,7 +129,7 @@ In your firebase project create and configure all providers you want to use: [ht
 
 This package will expose 2 endpoints under your api prefix (configurable):
 
-1) **POST**: `api/v1/firebase/user/create` 
+1. **POST**: `api/v1/firebase/user/create`
 
 In your mobile app or front end, you will allow your users to create an account using the [Firebase client SDK of your choice](https://firebase.google.com/docs/firestore/client/libraries).
 
@@ -131,7 +140,7 @@ This endpoint will reach firebase database, find and validate the user just crea
 Optionaly, you can perform 2 extra user configuration steps here:
 
 **1 - a) Conect extra user data from the firebase users payload:**
-    
+
 In your config/laravel-passport-firebase-auth.php indicate the keys you want to match against your laravel users table using the "map_user_columns" key in the array.
 
 **1 - b) Pass any other custom data you need for the user creation proces in your laravel database:**
@@ -140,7 +149,8 @@ An example will be if user creation require some mandatory columns (e.g. user_pl
 
 For security reasons, we'll validate this data, and we'll ignore any other values not declared in this "extra_user_columns" array.
 
-----
+---
+
 Example payload posted to `api/v1/firebase/user/create`:
 
 ```json
@@ -177,15 +187,17 @@ You will receive a `success` status from the endpoint, along with the backend us
 {
     "status": "success",
     "data": {
-        "user_id": 1,
         "access_token": "valid_laravel_passport_token",
         "token_type": "Bearer",
-        "expires_at": "2020-09-14T23:16:35.000000Z"
+        "expires_at": "2020-09-14T23:16:35.000000Z",
+        "user": [
+            'id' => 1
+        ],
     }
 }
 ```
 
-2) **POST**: `api/v1/firebase/user/login` 
+2. **POST**: `api/v1/firebase/user/login`
 
 You will need to call this endpoint with only a valid firebase token using the key `firebase_token` in the payload posted.
 
@@ -195,17 +207,19 @@ In case we find the user in the laravel database, the result will contain a `suc
 {
     "status": "success",
     "data": {
-        "user_id": 1,
         "access_token": "valid_laravel_passport_token",
         "token_type": "Bearer",
-        "expires_at": "2020-09-14T23:17:02.000000Z"
+        "expires_at": "2020-09-14T23:17:02.000000Z",
+        "user": [
+            'id' => 1
+        ],
     }
 }
 ```
 
 ## Testing
 
-``` bash
+```bash
 composer test
 ```
 
@@ -219,8 +233,8 @@ If you discover any security related issues, please email emiliano@square1.io in
 
 ## Credits
 
-- [Emiliano Tisato](https://github.com/emilianotisato)
-- [All Contributors](../../contributors)
+-   [Emiliano Tisato](https://github.com/emilianotisato)
+-   [All Contributors](../../contributors)
 
 ## License
 

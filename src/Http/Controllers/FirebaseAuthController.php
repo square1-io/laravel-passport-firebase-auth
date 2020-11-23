@@ -63,10 +63,10 @@ class FirebaseAuthController
         return response()->json([
             'status' => 'success',
             'data' => [
-                'user_id' => $user->id,
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
                 'expires_at' => $tokenResult->token->expires_at,
+                'user' => $user->only(config('laravel-passport-firebase-auth.expose_user_columns')),
             ],
         ]);
     }
@@ -100,10 +100,10 @@ class FirebaseAuthController
         return response()->json([
             'status' => 'success',
             'data' => [
-                'user_id' => $user->id,
                 'access_token' => $tokenResult->accessToken,
                 'token_type' => 'Bearer',
                 'expires_at' => $tokenResult->token->expires_at,
+                'user' => $user->only(config('laravel-passport-firebase-auth.expose_user_columns')),
             ],
         ]);
     }

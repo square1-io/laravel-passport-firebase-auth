@@ -32,7 +32,7 @@ class FirebaseAuthControllerTest extends TestCase
         $response->assertOk();
         $this->assertEquals(1, User::count());
 
-        $this->assertEquals(User::first()->id, $response->getData()->data->user_id);
+        $this->assertEquals(User::first()->id, $response->getData()->data->user->id);
         $this->assertNotNull($response->getData()->data->access_token);
     }
 
@@ -195,9 +195,82 @@ class FirebaseAuthControllerTest extends TestCase
 
         $response->assertOk();
 
-        $this->assertEquals($user->id, $response->getData()->data->user_id);
+        $this->assertEquals($user->id, $response->getData()->data->user->id);
         $this->assertNotNull($response->getData()->data->access_token);
         $this->assertTrue($response->getData()->data->expires_at > now()->format('Y-m-d H:i:s'));
+    }
+
+    /** @test */
+    public function test_when_creating_new_user_it_return_user_data_as_decalared_in_config_file()
+    {
+        $this->app['config']->set('laravel-passport-firebase-auth.map_user_columns', [
+            'uid' => 'firebase_uid',
+            'email' => 'email',
+            'role' => 'role',
+            'username' => 'username',
+        ]);
+
+        $this->app['config']->set('laravel-passport-firebase-auth.expose_user_columns', [
+            'id', 'role', 'username',
+        ]);
+
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid',
+            'email' => 'fake@email.com',
+            'role' => 'premium',
+            'username' => 'fake_username',
+        ]);
+
+        LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
+            ->once()
+            ->with('fake-token')
+            ->andReturn($firebaseUser);
+        LaravelPassportFirebaseAuth::makePartial();
+
+        $this->assertEquals(0, User::count());
+        $response = $this->post('api/v1/firebase/user/create', [
+            'firebase_token' => 'fake-token',
+        ]);
+
+        $response->assertOk();
+
+        // only expose tge 3 keys indicated in config
+        $this->assertEquals(3, count((array) $response->getData()->data->user));
+
+        $this->assertEquals(User::first()->id, $response->getData()->data->user->id);
+        $this->assertEquals(User::first()->role, $response->getData()->data->user->role);
+        $this->assertEquals(User::first()->username, $response->getData()->data->user->username);
+    }
+
+    /** @test */
+    public function test_when_login_existing_user_it_return_user_data_as_decalared_in_config_file()
+    {
+        $user = factory(User::class)->create(['firebase_uid' => 'fake-user-uid']);
+        $firebaseUser = $this->createFirebaseUser([
+            'uid' => 'fake-user-uid',
+        ]);
+
+        $this->app['config']->set('laravel-passport-firebase-auth.expose_user_columns', [
+            'id', 'uid',
+        ]);
+
+        LaravelPassportFirebaseAuth::shouldReceive('getUserFromToken')
+            ->once()
+            ->with('fake-token')
+            ->andReturn($firebaseUser);
+        LaravelPassportFirebaseAuth::makePartial();
+
+        $response = $this->post('api/v1/firebase/user/login', [
+            'firebase_token' => 'fake-token',
+        ]);
+
+        $response->assertOk();
+
+        // only expose tge 2 keys indicated in config
+        $this->assertEquals(2, count((array) $response->getData()->data->user));
+
+        $this->assertEquals(User::first()->id, $response->getData()->data->user->id);
+        $this->assertEquals(User::first()->uid, $response->getData()->data->user->uid);
     }
 
     /**

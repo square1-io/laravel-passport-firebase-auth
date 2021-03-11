@@ -21,7 +21,7 @@ class LaravelPassportFirebaseAuth
         $verifiedIdToken = $auth->verifyIdToken($token);
 
         // Retrieve the UID (User ID) from the verified Firebase credential's token
-        $uid = $verifiedIdToken->getClaim('sub');
+        $uid = $verifiedIdToken->claims()->get('sub');
 
         return $auth->getUser($uid);
     }

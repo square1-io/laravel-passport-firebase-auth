@@ -2,6 +2,7 @@
 
 namespace Square1\LaravelPassportFirebaseAuth;
 
+use Firebase;
 use Illuminate\Foundation\Auth\User;
 use Kreait\Firebase\Auth\UserRecord;
 use Laravel\Passport\PersonalAccessTokenResult;
@@ -51,5 +52,26 @@ class LaravelPassportFirebaseAuth
     {
         // If user has a valid UID but and empty array as provider
         return $firebaseUser->uid && $firebaseUser->providerData == [];
+    }
+
+    public function disableUser(User $user) : UserRecord
+    {
+        $uid = $user->{config('laravel-passport-firebase-auth.map_user_columns.uid')};
+        $auth = Firebase::auth();
+        return $auth->disableUser($uid);
+    }
+
+    public function enableUser(User $user) : UserRecord
+    {
+        $uid = $user->{config('laravel-passport-firebase-auth.map_user_columns.uid')};
+        $auth = Firebase::auth();
+        return $auth->enableUser($uid);
+    }
+
+    public function deleteUser(User $user)
+    {
+        $uid = $user->{config('laravel-passport-firebase-auth.map_user_columns.uid')};
+        $auth = Firebase::auth();
+        return $auth->deleteUser($uid);
     }
 }
